@@ -7,6 +7,9 @@ import matplotlib.pyplot as plt
 import matplotlib
 import io
 import urllib, base64
+import sys
+import os
+from .movie_recommendations import return_recommendation
 
 
 
@@ -29,6 +32,24 @@ def about(request):
 def signup(request):
     email = request.GET.get('email') 
     return render(request, 'signup.html', {'email':email})
+
+def recommendations(request):
+    print(":::::::::::::::::::::::::::::::::::::::::::::.")
+    #return HttpResponse('<h1>Welcome to Home Page</h1>')
+    #return render(request, 'home.html')
+    #return render(request, 'home.html', {'name':'Paola Vallejo'})
+    searchTerm = request.GET.get('searchMovie') # GET se usa para solicitar recursos de un servidor
+    if searchTerm:
+        recommedation = return_recommendation(searchTerm)
+        print(recommedation)
+        movies = Movie.objects.filter(title__icontains=recommedation)
+        print(movies)
+        if(recommedation):
+            return render(request, 'recommendations.html', {'searchTerm':searchTerm, 'movies':movies})
+
+    else:
+        movies = Movie.objects.all()
+        return render(request, 'recommendations.html', {'searchTerm':searchTerm, 'movies':movies})
 
 
 def statistics_view0(request):
